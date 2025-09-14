@@ -1,3 +1,5 @@
+Church Finder is a project that aims to help people find a suitable church in Japan. It was born out the realisation that finding churches serving in English (or languages besides Japanese) can be quite tough. This app is meant to streamline the church searching process for people living in Japan.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
