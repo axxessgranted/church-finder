@@ -2,9 +2,24 @@ import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
 // GET /api/churches
-export async function GET() {
+export async function GET(req) {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("churches").select("*");
+
+  const { searchParams } = new URL(req.url);
+  const city = searchParams.get("city");
+  const language = searchParams.get("language");
+
+  let query = supabase.from("churches").select("*");
+
+  if (city) {
+    query = query.ilike("city", `%${city}%`); // case-insensitive search
+  }
+
+  if (language) {
+    query = query.contains("languages", [language]); // check if array contains
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
