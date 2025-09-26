@@ -16,7 +16,7 @@ export async function GET(req) {
   }
 
   if (language) {
-    query = query.contains("languages", [language]); // check if array contains
+    query = query.contains("languages", [language]);
   }
 
   const { data, error } = await query;
