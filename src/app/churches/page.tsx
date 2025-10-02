@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import ChurchMap from "@/components/ChurchMap";
+import { Church } from "@/types/churches";
 
 // TODO: Add a dropdown / search combo for city search, so that we can go by region or city.
 // The city options should be pre-determined by what is available.
 // Similarly with language, we should have predetermined options and ability to multiselect on a dropdown / search combo
 export default function Churches() {
-  const [churches, setChurches] = useState([]);
+  const [churches, setChurches] = useState<Church[]>([]);
 
   useEffect(() => {
     async function fetchChurches() {

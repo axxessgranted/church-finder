@@ -2,10 +2,15 @@
 
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "@/lib/fixLeafletIcon"; // ensures markers render correctly
+import { Church } from "@/types/churches";
 
-export default function ChurchMap({ churches }) {
+type Props = {
+  churches: Church[];
+};
+
+export default function ChurchMap({ churches }: Props) {
   // Default center: Tokyo
-  const position = [35.6762, 139.6503];
+  const position: [number, number] = [35.6762, 139.6503];
 
   return (
     <MapContainer
