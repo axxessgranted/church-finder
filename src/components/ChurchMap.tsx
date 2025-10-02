@@ -1,49 +1,64 @@
 "use client";
 
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useEffect, useState } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import "@/lib/fixLeafletIcon"; // ensures markers render correctly
 import { Church } from "@/types/churches";
+import { FilterState } from "./ChurchFilter";
 
-type Props = {
-  churches: Church[];
-};
+export default function ChurchMap({ filters }: { filters: FilterState }) {
+  const [churches, setChurches] = useState<Church[]>([]);
 
-export default function ChurchMap({ churches }: Props) {
-  // Default center: Tokyo
-  const position: [number, number] = [35.6762, 139.6503];
+  useEffect(() => {
+    fetch("/api/churches")
+      .then((res) => res.json())
+      .then((data) => setChurches(data));
+  }, []);
+
+  // Apply client-side filters
+  const filtered = churches.filter((c) => {
+    const denomOk =
+      !filters.denomination || c.denomination === filters.denomination;
+
+    const langOk =
+      filters.languages.length === 0 ||
+      (c.languages &&
+        c.languages.some((lang) => filters.languages.includes(lang)));
+
+    return denomOk && langOk;
+  });
 
   return (
-    <MapContainer
-      center={position}
-      zoom={5}
-      style={{ height: "500px", width: "100%" }}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <div className="w-full h-[600px] rounded-lg shadow-lg overflow-hidden">
+      <MapContainer
+        center={[35.6762, 139.6503]}
+        zoom={6}
+        className="w-full h-full"
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
 
-      {churches.map((church) => (
-        <Marker key={church.id} position={[church.latitude, church.longitude]}>
-          <Popup>
-            <h2 className="font-bold">{church.name}</h2>
-            <p>
-              {church.city}, {church.prefecture}
-            </p>
-            <p>{church.languages?.join(", ")}</p>
-            {church.website && (
-              <a
-                href={church.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline"
-              >
-                Visit Website
-              </a>
-            )}
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+        {filtered.map((church) => (
+          <Marker
+            key={church.id}
+            position={[church.latitude, church.longitude]}
+          >
+            <Popup>
+              <div>
+                <h3 className="font-bold">{church.name}</h3>
+                {church.denomination && <p>{church.denomination}</p>}
+                {church.languages && (
+                  <p>Languages: {church.languages.join(", ")}</p>
+                )}
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
   );
 }

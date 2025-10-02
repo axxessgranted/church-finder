@@ -1,62 +1,23 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ChurchMap from "@/components/ChurchMap";
-import { Church } from "@/types/churches";
+import ChurchFilter, { FilterState } from "@/components/ChurchFilter";
 
 // TODO: Add a dropdown / search combo for city search, so that we can go by region or city.
 // The city options should be pre-determined by what is available.
 // Similarly with language, we should have predetermined options and ability to multiselect on a dropdown / search combo
 export default function Churches() {
-  const [churches, setChurches] = useState<Church[]>([]);
-  const [city, setCity] = useState("");
-  const [language, setLanguage] = useState("");
-
-  useEffect(() => {
-    async function fetchChurches() {
-      const params = new URLSearchParams();
-      if (city) params.append("city", city);
-      if (language) params.append("language", language);
-
-      const res = await fetch(`/api/churches?${params.toString()}`);
-      const data: Church[] = await res.json();
-      setChurches(data);
-    }
-    fetchChurches();
-  }, [city, language]);
+  const [filters, setFilters] = useState<FilterState>({
+    denomination: "",
+    languages: [],
+  });
 
   return (
     <main className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Church Finder Japan</h1>
 
-      {/* Filters */}
-      <div className="flex gap-4 mb-4">
-        <input
-          type="text"
-          placeholder="City"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          className="border p-2 rounded"
-        />
-        <input
-          type="text"
-          placeholder="Language"
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          className="border p-2 rounded"
-        />
-      </div>
-      <ChurchMap churches={churches} />
-      <ul className="space-y-2">
-        {churches.map((church) => (
-          <li key={church.id} className="p-4 border rounded shadow">
-            <h2 className="font-semibold">{church.name}</h2>
-            <p>
-              {church.city}, {church.prefecture}
-            </p>
-            <p>Languages: {church.languages?.join(", ")}</p>
-          </li>
-        ))}
-      </ul>
+      <ChurchFilter onChange={setFilters} />
+      <ChurchMap filters={filters} />
     </main>
   );
 }
