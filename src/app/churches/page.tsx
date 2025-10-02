@@ -8,7 +8,7 @@ import ChurchFilter, { FilterState } from "@/components/ChurchFilter";
 // Similarly with language, we should have predetermined options and ability to multiselect on a dropdown / search combo
 export default function Churches() {
   const [filters, setFilters] = useState<FilterState>({
-    denomination: "",
+    denominations: [],
     languages: [],
   });
 

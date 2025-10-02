@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 export interface FilterState {
-  denomination: string;
+  denominations: string[];
   languages: string[];
 }
 
@@ -13,7 +13,7 @@ interface Props {
 
 export default function ChurchFilter({ onChange }: Props) {
   const [filters, setFilters] = useState<FilterState>({
-    denomination: "",
+    denominations: [],
     languages: [],
   });
 
@@ -29,17 +29,24 @@ export default function ChurchFilter({ onChange }: Props) {
 
       {/* Denomination */}
       <div>
-        <label className="block text-sm font-medium">Denomination</label>
-        <select
-          value={filters.denomination}
-          onChange={(e) => handleChange("denomination", e.target.value)}
-          className="w-full border rounded p-2 mt-1"
-        >
-          <option value="">All</option>
-          <option value="Protestant">Protestant</option>
-          <option value="Interdenominational">Interdenominational</option>
-          <option value="Baptist">Baptist</option>
-        </select>
+        <label className="block text-sm font-medium">Denominations</label>
+        <div className="mt-1 space-y-1">
+          {["Interdenominational", "Baptist", "Protestant"].map((denom) => (
+            <label key={denom} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={filters.denominations.includes(denom)}
+                onChange={(e) => {
+                  const newDenoms = e.target.checked
+                    ? [...filters.denominations, denom]
+                    : filters.denominations.filter((d) => d !== denom);
+                  handleChange("denominations", newDenoms);
+                }}
+              />
+              {denom}
+            </label>
+          ))}
+        </div>
       </div>
 
       {/* Language */}

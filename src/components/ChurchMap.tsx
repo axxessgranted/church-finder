@@ -17,10 +17,10 @@ export default function ChurchMap({ filters }: { filters: FilterState }) {
       .then((data) => setChurches(data));
   }, []);
 
-  // Apply client-side filters
   const filtered = churches.filter((c) => {
     const denomOk =
-      !filters.denomination || c.denomination === filters.denomination;
+      filters.denominations.length === 0 ||
+      (c.denomination && filters.denominations.includes(c.denomination));
 
     const langOk =
       filters.languages.length === 0 ||
