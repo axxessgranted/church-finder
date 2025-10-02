@@ -8,19 +8,43 @@ import { Church } from "@/types/churches";
 // Similarly with language, we should have predetermined options and ability to multiselect on a dropdown / search combo
 export default function Churches() {
   const [churches, setChurches] = useState<Church[]>([]);
+  const [city, setCity] = useState("");
+  const [language, setLanguage] = useState("");
 
   useEffect(() => {
     async function fetchChurches() {
-      const res = await fetch("/api/churches");
-      const data = await res.json();
+      const params = new URLSearchParams();
+      if (city) params.append("city", city);
+      if (language) params.append("language", language);
+
+      const res = await fetch(`/api/churches?${params.toString()}`);
+      const data: Church[] = await res.json();
       setChurches(data);
     }
     fetchChurches();
-  }, []);
+  }, [city, language]);
 
   return (
     <main className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Church Finder Japan</h1>
+
+      {/* Filters */}
+      <div className="flex gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="City"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          className="border p-2 rounded"
+        />
+        <input
+          type="text"
+          placeholder="Language"
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+          className="border p-2 rounded"
+        />
+      </div>
       <ChurchMap churches={churches} />
       <ul className="space-y-2">
         {churches.map((church) => (
@@ -29,6 +53,7 @@ export default function Churches() {
             <p>
               {church.city}, {church.prefecture}
             </p>
+            <p>Languages: {church.languages?.join(", ")}</p>
           </li>
         ))}
       </ul>
